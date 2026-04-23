@@ -1,0 +1,72 @@
+{
+  "name": "copilot-conductor",
+  "displayName": "Copilot Conductor",
+  "description": "Prompt validation, model routing, and cost estimation for GitHub Copilot.",
+  "version": "0.1.0",
+  "publisher": "copilot-conductor",
+  "license": "MIT",
+  "engines": {
+    "vscode": "^1.95.0",
+    "node": ">=20"
+  },
+  "categories": ["AI", "Chat", "Other"],
+  "keywords": ["copilot", "model routing", "prompt validation", "cost", "llm"],
+  "activationEvents": [],
+  "main": "./out/extension.js",
+  "bin": {
+    "copilot-conductor-mcp": "./out/mcp-server.js"
+  },
+  "contributes": {
+    "chatParticipants": [
+      {
+        "id": "copilot-conductor.conductor",
+        "name": "conductor",
+        "fullName": "Copilot Conductor",
+        "description": "Validate prompt, route to best model, show cost.",
+        "isSticky": true,
+        "commands": [
+          { "name": "route",    "description": "Pick the best model for this prompt" },
+          { "name": "validate", "description": "Score prompt completeness; ask follow-ups if weak" },
+          { "name": "cost",     "description": "Estimate tokens and $ for this prompt" },
+          { "name": "explain",  "description": "Explain the routing/validation decision" }
+        ]
+      }
+    ],
+    "configuration": {
+      "title": "Copilot Conductor",
+      "properties": {
+        "copilotConductor.completenessThreshold": {
+          "type": "number",
+          "default": 60,
+          "minimum": 0,
+          "maximum": 100,
+          "description": "Below this score, Conductor asks follow-up questions instead of invoking a model."
+        },
+        "copilotConductor.autoForward": {
+          "type": "boolean",
+          "default": true,
+          "description": "After routing, forward the prompt to the chosen model and stream the answer."
+        },
+        "copilotConductor.preferCheap": {
+          "type": "boolean",
+          "default": false,
+          "description": "Bias routing toward the cheapest model that clears the quality bar."
+        }
+      }
+    }
+  },
+  "scripts": {
+    "compile": "tsc -p .",
+    "watch": "tsc -w -p .",
+    "vscode:prepublish": "npm run compile",
+    "mcp": "node ./out/mcp-server.js"
+  },
+  "devDependencies": {
+    "@types/node": "^20.11.0",
+    "@types/vscode": "^1.95.0",
+    "typescript": "^5.4.0"
+  },
+  "dependencies": {
+    "@modelcontextprotocol/sdk": "^1.0.4"
+  }
+}
