@@ -1,4 +1,5 @@
 import { ClassificationResult, TaskType } from "./types.js";
+import { JudgeFn } from "./llmJudge.js";
 
 // Rule-based classifier. Fast, deterministic, auditable.
 // Upgrade path: if confidence < 0.6 call a cheap LLM as a judge.
@@ -95,4 +96,51 @@ export function classify(
   const confidence = Math.min(1, 0.4 + (topScore - second) * 0.15 + topScore * 0.05);
 
   return { task: top, confidence, signals };
+}
+
+// v0.3 — async variant that escalates to an LLM judge when rule-based
+// confidence is below `judgeThreshold`. If the judge is unavailable or
+// returns null, the rule-based result stands.
+export interface ClassifyAsyncOptions {
+  attachedTokens?: number;
+  fileCount?: number;
+  judge?: JudgeFn;
+  judgeThreshold?: number;   // default 0.85 (v0.3.1)
+}
+
+export interface ClassifyAsyncResult extends ClassificationResult {
+  /** If the LLM judge was consulted and provided one, its output-token estimate. */
+  judgeOutputTokensEstimate?: number;
+  judgeModelId?: string;
+}
+
+export async function classifyAsync(
+  prompt: string,
+  opts: ClassifyAsyncOptions = {}
+): Promise<ClassifyAsyncResult> {
+  const base = classify(prompt, {
+    attachedTokens: opts.attachedTokens,
+    fileCount: opts.fileCount,
+  });
+  const threshold = opts.judgeThreshold ?? 0.85;
+  if (!opts.judge || base.confidence >= threshold) return base;
+
+  try {
+    const judged = await opts.judge(prompt);
+    if (!judged) return base;
+    return {
+      task: judged.task,
+      confidence: Math.max(base.confidence, judged.confidence),
+      signals: [
+        ...base.signals,
+        `llm-judge(${judged.modelId}): task=${judged.task} conf=${judged.confidence.toFixed(2)}${
+          judged.outputTokensEstimate ? ` out≈${judged.outputTokensEstimate}` : ""
+        }${judged.rationale ? ` — ${judged.rationale}` : ""}`,
+      ],
+      judgeOutputTokensEstimate: judged.outputTokensEstimate,
+      judgeModelId: judged.modelId,
+    };
+  } catch {
+    return base;
+  }
 }

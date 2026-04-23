@@ -1,0 +1,21 @@
+{
+  "$schema": "./.conductor.schema.json",
+  "//": "Sample policy for end-to-end testing. Delete or rename to .conductor.off.json to disable.",
+  "denyModels": ["claude-opus"],
+  "premiumModelsAllowedFor": ["code_large", "reasoning"],
+  "redact": {
+    "builtins": true,
+    "patterns": ["CORP-[A-Z0-9]{12}"],
+    "blockOnMatch": false
+  },
+  "audit": {
+    "enabled": true,
+    "path": ".conductor/audit.jsonl"
+  },
+  "llmJudge": {
+    "enabled": true,
+    "confidenceThreshold": 0.6
+  },
+  "completenessThreshold": 60,
+  "preferCheap": true
+}

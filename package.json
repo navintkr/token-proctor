@@ -2,15 +2,25 @@
   "name": "copilot-conductor",
   "displayName": "Copilot Conductor",
   "description": "Prompt validation, model routing, and cost estimation for GitHub Copilot.",
-  "version": "0.1.0",
+  "version": "0.3.0",
   "publisher": "copilot-conductor",
   "license": "MIT",
   "engines": {
     "vscode": "^1.95.0",
     "node": ">=20"
   },
-  "categories": ["AI", "Chat", "Other"],
-  "keywords": ["copilot", "model routing", "prompt validation", "cost", "llm"],
+  "categories": [
+    "AI",
+    "Chat",
+    "Other"
+  ],
+  "keywords": [
+    "copilot",
+    "model routing",
+    "prompt validation",
+    "cost",
+    "llm"
+  ],
   "activationEvents": [],
   "main": "./out/extension.js",
   "bin": {
@@ -25,11 +35,38 @@
         "description": "Validate prompt, route to best model, show cost.",
         "isSticky": true,
         "commands": [
-          { "name": "route",    "description": "Pick the best model for this prompt" },
-          { "name": "validate", "description": "Score prompt completeness; ask follow-ups if weak" },
-          { "name": "cost",     "description": "Estimate tokens and $ for this prompt" },
-          { "name": "explain",  "description": "Explain the routing/validation decision" }
+          {
+            "name": "route",
+            "description": "Pick the best model for this prompt"
+          },
+          {
+            "name": "validate",
+            "description": "Score prompt completeness; ask follow-ups if weak"
+          },
+          {
+            "name": "cost",
+            "description": "Estimate tokens and $ for this prompt"
+          },
+          {
+            "name": "explain",
+            "description": "Explain the routing/validation decision"
+          },
+          {
+            "name": "confirm",
+            "description": "Confirm the previous recommendation and forward to the chosen model"
+          },
+          {
+            "name": "cancel",
+            "description": "Cancel a pending confirmation — no model will be called"
+          }
         ]
+      }
+    ],
+    "commands": [
+      {
+        "command": "copilot-conductor.diagnoseModelCommands",
+        "title": "Copilot Conductor: Diagnose Model Commands",
+        "category": "Copilot Conductor"
       }
     ],
     "configuration": {
@@ -47,10 +84,42 @@
           "default": true,
           "description": "After routing, forward the prompt to the chosen model and stream the answer."
         },
+        "copilotConductor.requireConfirmation": {
+          "type": "boolean",
+          "default": true,
+          "description": "Show the recommended model and wait for user confirmation (Confirm & forward button or /confirm) before calling the model."
+        },
+        "copilotConductor.handoffToCopilot": {
+          "type": "boolean",
+          "default": true,
+          "description": "When confirmed, hand the prompt off to the GitHub Copilot agent (which has file-edit tools) instead of streaming a plain text answer from vscode.lm. User should pick the recommended model in the chat model picker first."
+        },
+        "copilotConductor.handoffParticipant": {
+          "type": "string",
+          "default": "github.copilot",
+          "description": "Chat participant id to hand off to when handoffToCopilot is enabled. Defaults to the GitHub Copilot agent."
+        },
         "copilotConductor.preferCheap": {
           "type": "boolean",
           "default": false,
           "description": "Bias routing toward the cheapest model that clears the quality bar."
+        },
+        "copilotConductor.exactTokenCounts": {
+          "type": "boolean",
+          "default": true,
+          "description": "Use js-tiktoken for exact token counts when available. Falls back to the chars/4 heuristic if the package is not installed."
+        },
+        "copilotConductor.llmJudge.enabled": {
+          "type": "boolean",
+          "default": true,
+          "description": "When the rule-based classifier has low confidence, escalate to an LLM-judge that auto-picks the cheapest available model via vscode.lm."
+        },
+        "copilotConductor.llmJudge.confidenceThreshold": {
+          "type": "number",
+          "default": 0.85,
+          "minimum": 0,
+          "maximum": 1,
+          "description": "Rule-based confidence below this triggers the LLM-judge. Default 0.85 means the judge is consulted on most prompts for higher accuracy. 0 = always consult, 1 = never."
         }
       }
     }
@@ -67,6 +136,7 @@
     "typescript": "^5.4.0"
   },
   "dependencies": {
-    "@modelcontextprotocol/sdk": "^1.0.4"
+    "@modelcontextprotocol/sdk": "^1.0.4",
+    "js-tiktoken": "^1.0.21"
   }
 }

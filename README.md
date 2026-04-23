@@ -106,11 +106,13 @@ Tools exposed:
 
 | Tool | What it does |
 |---|---|
-| `analyze_prompt` | Full pipeline - classify, validate, route, cost. |
+| `analyze_prompt` | Full pipeline - redact, classify, validate, route, cost. |
 | `validate_prompt` | Completeness score + follow-up questions. |
 | `recommend_model` | Task classification + best model + alternatives. |
 | `estimate_cost` | Tokens + USD against an auto-routed or named model. |
 | `list_models` | The model catalog (prices, premium multipliers). |
+| `redact_text` | Return a redacted copy using built-in + policy secret patterns. |
+| `get_policy` | Return the loaded `.conductor.json` policy and its source path. |
 
 ---
 
@@ -122,9 +124,48 @@ VS Code settings (`settings.json`):
 {
   "copilotConductor.completenessThreshold": 60,
   "copilotConductor.autoForward": true,
-  "copilotConductor.preferCheap": false
+  "copilotConductor.preferCheap": false,
+  "copilotConductor.exactTokenCounts": true,
+  "copilotConductor.llmJudge.enabled": true,
+  "copilotConductor.llmJudge.confidenceThreshold": 0.6
 }
 ```
+
+### Policy (v0.2)
+
+Drop a `.conductor.json` at your workspace root (or `~/.conductor/config.json`):
+
+```json
+{
+  "allowModels": ["gpt-4o-mini", "gpt-4o", "claude-sonnet-4"],
+  "denyModels": ["claude-opus"],
+  "premiumModelsAllowedFor": ["code_large", "reasoning"],
+  "redact": {
+    "builtins": true,
+    "patterns": ["CORP-[A-Z0-9]{12}"],
+    "blockOnMatch": false
+  },
+  "audit": {
+    "enabled": true,
+    "path": ".conductor/audit.jsonl"
+  },
+  "llmJudge": { "enabled": true, "confidenceThreshold": 0.6 }
+}
+```
+
+- **allow/deny/premium-for-task** — gate the model pool the router can pick from.
+- **redact** — built-in detectors cover AWS keys, GitHub/Slack/OpenAI/Stripe tokens, JWTs, PEM private keys, Google API keys, generic high-entropy secrets. Matches are replaced with `[REDACTED:kind]` **before** anything leaves the pure functions — the forwarded prompt never contains raw secrets.
+- **audit** — opt-in JSONL log of every decision (task, model, cost, redactions, verdict). Local file; no network.
+
+### LLM-judge (v0.3)
+
+When the rule-based classifier's confidence is below the threshold, Conductor asks a cheap LLM to double-check the task label. The judge auto-picks **the cheapest available `vscode.lm` model** (mini/haiku/flash/nano families first). Judge output is merged into the classification and surfaced in the summary (`🧠 llm-judge(...)`).
+
+On by default. Turn off globally with `copilotConductor.llmJudge.enabled: false`, or per-repo with `"llmJudge": { "enabled": false }` in `.conductor.json`.
+
+### Exact token counts (v0.3)
+
+If `js-tiktoken` is installed (listed as an `optionalDependency`), Conductor uses it for exact token counts. Otherwise it falls back to the `chars/4` heuristic. The summary tags which mode is in use.
 
 Model catalog, prices, and premium multipliers are plain data in
 [`src/data/pricing.ts`](src/data/pricing.ts). Fork it, tune it, ship it.
@@ -175,8 +216,8 @@ spend - and it composes with, rather than replaces, whatever Copilot does next.
 ## Roadmap
 
 - [x] v0.1 - classifier, validator, router, cost, chat participant, MCP server.
-- [ ] v0.2 - `.conductor.yaml` policy + secret redaction + JSONL audit log.
-- [ ] v0.3 - LLM-judge fallback classifier + `tiktoken` for exact counts.
+- [x] v0.2 - `.conductor.json` policy (allow/deny/premium-gating) + secret redaction + JSONL audit log.
+- [x] v0.3 - LLM-judge fallback classifier (auto-picks cheapest `vscode.lm` model) + `js-tiktoken` for exact counts.
 - [ ] v0.4 - `vscode.lm.registerTool` so Copilot agent mode can call us directly.
 - [ ] v0.5 - Server-side GitHub Copilot Extension for centralized org routing.
 

@@ -3,6 +3,8 @@ import { CostEstimate, ModelSpec, TaskType } from "./types.js";
 export interface CostOptions {
   inputTokens: number;
   task: TaskType;
+  /** If provided (e.g. from the LLM judge), overrides the task-ratio heuristic. */
+  outputTokensOverride?: number;
 }
 
 // Task -> assumed output:input ratio. Reasoning tasks tend to produce
@@ -18,7 +20,8 @@ const OUTPUT_RATIO: Record<TaskType, number> = {
 };
 
 export function estimateCost(model: ModelSpec, opts: CostOptions): CostEstimate {
-  const outTokens = Math.ceil(opts.inputTokens * (OUTPUT_RATIO[opts.task] ?? 0.5));
+  const outTokens = opts.outputTokensOverride ??
+    Math.ceil(opts.inputTokens * (OUTPUT_RATIO[opts.task] ?? 0.5));
   const inUsd  = (opts.inputTokens / 1_000_000) * model.pricePerMInput;
   const outUsd = (outTokens        / 1_000_000) * model.pricePerMOutput;
   const total = inUsd + outUsd;

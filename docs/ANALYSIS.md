@@ -143,11 +143,11 @@ Output is a single line: `~1,420 in / ~570 out · ~$0.018 · 1 premium request �
 
 ## 7. Roadmap
 
-**v0.1 (this starter)** — classifier, validator, cost, router; chat participant `@conductor`; MCP server with three tools.
+**v0.1** — classifier, validator, cost, router; chat participant `@conductor`; MCP server.
 
-**v0.2** — `.conductor.yaml` policy loader, redaction, JSONL audit log.
+**v0.2 (shipped)** — `.conductor.json` policy loader (allow/deny/premium-gating), built-in secret redaction (AWS, GitHub, Slack, OpenAI, Stripe, JWT, PEM, Google), JSONL audit log (opt-in).
 
-**v0.3** — LLM‑judge fallback classifier, tiktoken integration, per‑user learning ("you usually pick X for Y").
+**v0.3 (shipped)** — LLM-judge fallback classifier that auto-picks the cheapest available `vscode.lm` model; exact token counts via optional `js-tiktoken`. Both configurable and on by default.
 
 **v0.4** — Language Model Tool so Copilot's agent mode can call `conductor.route` directly.
 
