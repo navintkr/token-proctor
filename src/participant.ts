@@ -109,11 +109,27 @@ async function forward(
   try {
     const messages = [vscode.LanguageModelChatMessage.User(prompt)];
     const resp = await model.sendRequest(messages, {}, token);
-    for await (const chunk of resp.text) {
-      stream.markdown(chunk);
+    
+    // Properly handle the response stream
+    if (!resp) {
+      stream.markdown(`\n\n> ❌ Model call failed: No response received`);
+      return;
+    }
+
+    // Check if resp.text exists and is iterable
+    if (resp.text) {
+      try {
+        for await (const chunk of resp.text) {
+          stream.markdown(chunk);
+        }
+      } catch (streamErr: any) {
+        stream.markdown(`\n\n> ❌ Failed to stream response: \`${streamErr?.message ?? streamErr}\``);
+      }
+    } else {
+      stream.markdown(`\n\n> ❌ Model returned empty response`);
     }
   } catch (err: any) {
-    stream.markdown(`\n\n> ❌ Model call failed: \`${err?.message ?? err}\``);
+    stream.markdown(`\n\n> ❌ Model call failed: \`${err?.message ?? JSON.stringify(err)}\``);
   }
 }
 

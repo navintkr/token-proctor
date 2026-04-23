@@ -19,24 +19,38 @@ Read the full design: [docs/ANALYSIS.md](docs/ANALYSIS.md).
 
 ---
 
+## Prerequisites
+
+- **Node.js** ≥ 20 (`node -v` to check)
+- **VS Code** ≥ 1.95
+- **GitHub Copilot** extension installed and signed in (Business or Enterprise entitlement)
+
+---
+
 ## Quick start
 
 ```bash
+# 1. Clone and install dependencies
+git clone https://github.com/<your-org>/copilot-conductor.git
+cd copilot-conductor
 npm install
+
+# 2. Compile TypeScript
 npm run compile
 ```
 
 ### Try the chat participant
 
 1. Open this folder in VS Code.
-2. Press `F5` → opens an Extension Development Host.
-3. Open Copilot Chat, type:
+2. Press **F5** → an **Extension Development Host** window opens.
+3. In the new window, open **Copilot Chat** (Ctrl+Shift+I / Cmd+Shift+I).
+4. Type:
 
 ```
 @conductor add caching to fetchUser so repeated calls within 5s return the same result
 ```
 
-You'll see:
+5. You'll see output like this:
 
 ```
 Task: code_small (confidence 78%)
@@ -44,6 +58,8 @@ Completeness: ✅ 72/100 (ready)
 Recommended model: gpt-4o
 Estimate: ~210 in / ~84 out · ~$0.002 · 1× premium · model=gpt-4o
 ```
+
+![Sample output from @conductor](docs/screenshots/sample-output.png)
 
 Slash commands:
 
@@ -55,7 +71,7 @@ Slash commands:
 ### Try the MCP server
 
 ```bash
-npm run compile
+# Make sure you've already compiled (npm run compile)
 node ./out/mcp-server.js
 ```
 
