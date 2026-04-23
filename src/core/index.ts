@@ -141,7 +141,7 @@ export async function analyzeAsync(input: AnalyzeAsyncInput): Promise<AnalyzeAsy
     inputTokens,
     availableModels: gated.allowedIds ?? input.availableModelIds,
     preferCheap: input.preferCheap ?? policy.preferCheap,
-    optimizeFor: input.optimizeFor ?? policy.optimizeFor ?? "balanced",
+    optimizeFor: input.optimizeFor ?? policy.optimizeFor ?? "tokens",
     turnsEstimate: judgeTurns,
   });
 

@@ -39,7 +39,7 @@ export function route(task: TaskType, opts: RouteOptions): RoutingResult {
   scored.sort((a, b) => b.s - a.s);
 
   const top = scored[0].m;
-  const mode = opts.optimizeFor ?? "balanced";
+  const mode = opts.optimizeFor ?? "tokens";
   const turns = opts.turnsEstimate ?? 1;
   const rationale = [
     `task=${task}`,
@@ -58,7 +58,7 @@ export function route(task: TaskType, opts: RouteOptions): RoutingResult {
 
 function scoreModel(m: ModelSpec, task: TaskType, opts: RouteOptions): number {
   let s = 0;
-  const mode = opts.optimizeFor ?? "balanced";
+  const mode = opts.optimizeFor ?? "tokens";
   const turns = Math.max(1, opts.turnsEstimate ?? 1);
 
   // Fit

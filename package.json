@@ -107,8 +107,8 @@
         "copilotConductor.optimizeFor": {
           "type": "string",
           "enum": ["tokens", "turns", "balanced"],
-          "default": "balanced",
-          "markdownDescription": "How to weigh cost axes in routing:\n- `tokens` — minimize $/M token price (classic); best for one-shot tasks.\n- `turns` — minimize premium-multiplier × turns; best when agent loops run many turns (e.g. code_large, agentic).\n- `balanced` — default compromise."
+          "default": "tokens",
+          "markdownDescription": "How to weigh cost axes in routing:\n- `tokens` — **default** — minimize $/M token price (classic); best for one-shot tasks.\n- `turns` — minimize premium-multiplier × turns; best when agent loops run many turns (e.g. `code_large`, `agentic`).\n- `balanced` — weighted compromise between the two."
         },
         "copilotConductor.exactTokenCounts": {
           "type": "boolean",
