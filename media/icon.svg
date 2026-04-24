@@ -1,0 +1,26 @@
+<svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 128 128" width="128" height="128">
+  <defs>
+    <linearGradient id="bg" x1="0" y1="0" x2="1" y2="1">
+      <stop offset="0%" stop-color="#1e1b4b"/>
+      <stop offset="100%" stop-color="#4338ca"/>
+    </linearGradient>
+    <linearGradient id="tau" x1="0" y1="0" x2="0" y2="1">
+      <stop offset="0%" stop-color="#a5b4fc"/>
+      <stop offset="100%" stop-color="#ffffff"/>
+    </linearGradient>
+  </defs>
+  <!-- rounded square background -->
+  <rect x="4" y="4" width="120" height="120" rx="24" fill="url(#bg)"/>
+  <!-- shield outline (proctor / oversight) -->
+  <path d="M64 18 L102 30 V64 C102 86 86 102 64 110 C42 102 26 86 26 64 V30 Z"
+        fill="none" stroke="#a5b4fc" stroke-width="3" stroke-opacity="0.55"/>
+  <!-- tau (τ) — token symbol -->
+  <g fill="url(#tau)">
+    <rect x="36" y="44" width="56" height="10" rx="3"/>
+    <rect x="59" y="44" width="10" height="46" rx="3"/>
+  </g>
+  <!-- check mark inside the tau base (validated) -->
+  <path d="M48 86 L60 96 L82 74"
+        fill="none" stroke="#22d3ee" stroke-width="5"
+        stroke-linecap="round" stroke-linejoin="round"/>
+</svg>

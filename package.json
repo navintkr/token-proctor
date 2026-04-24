@@ -2,9 +2,18 @@
   "name": "token-proctor",
   "displayName": "Token Proctor",
   "description": "Prompt validation, model routing, and token/turn cost projection for GitHub Copilot and other token-priced LLM plans.",
-  "version": "0.4.0",
+  "version": "0.4.1",
+  "icon": "media/icon.png",
   "publisher": "token-proctor",
   "license": "MIT",
+  "repository": {
+    "type": "git",
+    "url": "https://github.com/navintkr/token-proctor.git"
+  },
+  "homepage": "https://github.com/navintkr/token-proctor#readme",
+  "bugs": {
+    "url": "https://github.com/navintkr/token-proctor/issues"
+  },
   "engines": {
     "vscode": "^1.95.0",
     "node": ">=20"

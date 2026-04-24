@@ -1,5 +1,10 @@
 # Token Proctor
 
+[![VS Marketplace](https://img.shields.io/visual-studio-marketplace/v/token-proctor.token-proctor?label=VS%20Marketplace&color=blueviolet)](https://marketplace.visualstudio.com/items?itemName=token-proctor.token-proctor)
+[![Installs](https://img.shields.io/visual-studio-marketplace/i/token-proctor.token-proctor)](https://marketplace.visualstudio.com/items?itemName=token-proctor.token-proctor)
+[![License: MIT](https://img.shields.io/badge/License-MIT-yellow.svg)](LICENSE)
+[![GitHub stars](https://img.shields.io/github/stars/navintkr/token-proctor?style=social)](https://github.com/navintkr/token-proctor)
+
 > Pick the right model. Validate the prompt. See the real cost — tokens **and** turns. Before you spend a premium request.
 
 An open-source layer on top of **GitHub Copilot** (and any token-priced LLM plan) that answers the three questions every team eventually asks:
